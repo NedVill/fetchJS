@@ -1,0 +1,145 @@
+body {
+	font-family: 'Open Sans',sans-serif;
+}
+
+h1 {
+	text-transform: capitalize;
+	text-align: center;
+	letter-spacing: normal;
+}
+
+.wrapper {
+	max-width: 1170px;
+	display: block;
+	margin: 0 auto;
+	box-sizing: border-box;
+	padding: 0px 15px;
+}
+
+.album {
+	box-sizing: border-box;
+	position: relative;
+	letter-spacing: -0.3em;
+	height: 760px;
+	width: 100%;
+	padding: 0 50px;
+}
+
+button {
+	display: inline-block;
+	vertical-align: top;
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	background: none;
+	border: none;
+	height: 100%;
+	width: 50px;
+	padding: 0;
+}
+
+.prev {
+	left: 0;
+}
+
+.next {
+	right: 0;
+}
+
+button::before {
+	content: '';
+	top: 50%;
+	display: inline-block;
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-bottom: 4px solid darkred;
+	border-left: 4px solid darkred;
+}
+
+button:focus {
+	outline: none;
+}
+
+.prev::before {
+	transform: rotate(45deg);
+	left: 25%;
+}
+
+.next::before {
+	transform: rotate(-135deg);
+	right: 25%;
+}
+
+.album-content {
+	display: inline-block;
+	vertical-align: top;
+	width: 100%;
+}
+
+section {
+	padding-top: 100px;
+}
+
+.thumbs {
+	letter-spacing: -0.3em;
+	max-height: 670px;
+	overflow-y: scroll;
+}
+
+.thumbs a {
+	letter-spacing: normal;
+	display: inline-block;
+	width: calc(94% / 3);
+	margin: 1%;
+}
+
+.thumbs img {
+	width: 100%;
+	height: auto;
+}
+
+@media screen and (max-width: 1170px) {
+	.album-content {
+		width: 100%;
+	}
+}
+
+@media screen and (max-width: 800px) {
+	
+	h1 {
+		font-size: 22px;
+	}
+	
+	.thumbs a {
+		width: 48%;	
+	}
+}
+
+@media screen and (max-width: 450px) {
+	
+	h1 {
+		font-size: 18px;
+	}
+	
+	button {
+		width: 25px;
+	}
+	
+	button::before { 
+		width: 10px;
+		height: 10px
+	}
+	
+	.album {
+		padding: 0 25px;	
+	}
+	
+	.wrapper {
+		padding: 0 10px; 
+	}
+	
+	.thumbs a {
+		width: 97%;
+	}
+}
