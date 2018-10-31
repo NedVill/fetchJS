@@ -53,8 +53,6 @@ function setImagePopup(item, popup) {
 
 popupSelect('.popup', 'close', 'opened', '.close');
 
-/* Сначала загрузим альбом по дефолту (создадим в разметке изображения и обернем их в обертку фансибокса) */
-
 function setAlbum() {
 
 	function standardAlbum() {
