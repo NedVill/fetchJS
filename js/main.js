@@ -52,12 +52,103 @@ function setImagePopup(item, popup) {
 	img.className = "imagePopup";
 	img.src = src;
 	getPopup.appendChild(img);
-	openPopup(popup);
+	setTimeout(function(){
+		openPopup(popup);
+	},100)
 }
 
 closePopup('.popup','.close');
 
+function setWrapp(data) {
+	
+	var thumbs = document.createElement('div');
+	thumbs.classList.add('thumbs');
+	
+	var album = getSelector('.album');
+	
+	var albumContent = document.createElement('div');
+	albumContent.classList.add('album-content');	
+	
+	var title = document.createElement('h1');
+
+	var buttonPrev = document.createElement('button');
+	buttonPrev.classList.add('btn_album', 'prev');
+	buttonPrev.setAttribute('data-attr','prev');	
+	
+	var buttonNext = document.createElement('button');
+	buttonNext.classList.add('btn_album','next');
+	buttonNext.setAttribute('data-attr','next');	
+
+	
+	album.appendChild(buttonPrev);
+	album.appendChild(albumContent);
+	album.appendChild(buttonNext);
+	
+	albumContent.appendChild(title);
+	albumContent.appendChild(thumbs);	
+	
+	for (var i = 0; i < data.length; i++) {
+		var img = document.createElement('img');
+		var link = document.createElement('a');
+		img.className = "thumb";
+		img.src = data[i].thumbnailUrl;
+		link.className = "image";
+		link.href = data[i].url;
+		link.setAttribute('data-inpopup', 'images');
+		link.appendChild(img);
+		thumbs.appendChild(link);
+		
+	}	
+	
+}
+
+var countAlbum = 0;
+
 function setAlbum() {
+	
+	countAlbum++;
+	if(countAlbum > 1) {
+		return false;
+	}
+	
+	function getPhotos(id) {
+		fetch('https://jsonplaceholder.typicode.com/photos?albumId=' + id)
+		.then(function (response) {
+			return response.json();
+		})
+		.then(function (data) {
+			if (data[0].albumId == id) {
+				var img = document.getElementsByClassName('thumb');
+				for (var i = 0; i < img.length; i++) {
+					img[i].src = data[i].thumbnailUrl;
+				}
+				var link = document.getElementsByClassName('image');
+				for (var i = 0; i < link.length; i++) {
+					link[i].href = data[i].url;
+				}
+			}
+		})	
+	}
+
+	function setTitle(id) {
+		fetch('https://jsonplaceholder.typicode.com/albums/')
+			.then(function (response) {
+				return response.json();
+			})
+			.then(function (data) {
+				if(id === undefined) {
+					var h1 = document.getElementsByTagName('h1')[0];
+					h1.innerHTML = data[0].title;		
+				} else {
+					for (var i = 0; i < data.length; i++) {
+						if (data[i].id == id) {
+							var h1 = document.getElementsByTagName('h1')[0];
+							h1.innerHTML = data[i].title;
+						}
+					}			
+				}
+			})			
+	}
 
 	function initAlbum() {
 		fetch('https://jsonplaceholder.typicode.com/photos/?albumId=1')
@@ -65,42 +156,27 @@ function setAlbum() {
 				return response.json();
 			})
 			.then(function (data) {
-				var wrapp = getSelector('.thumbs');
-				for (var i = 0; i < data.length; i++) {
-					var img = document.createElement('img');
-					var link = document.createElement('a');
-					img.className = "thumb";
-					img.src = data[i].thumbnailUrl;
-					link.className = "image";
-					link.href = data[i].url;
-					link.setAttribute('data-inpopup', 'images');
-					link.appendChild(img);
-					wrapp.appendChild(link);
-				}
-			})
-		fetch('https://jsonplaceholder.typicode.com/albums/')
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (data) {
-				var h1 = document.getElementsByTagName('h1')[0];
-				h1.innerHTML = data[0].title;
+				setWrapp(data);
+				setTitle();
 			})
 	}
 
 	initAlbum();
-
-	var button = document.getElementsByClassName('btn_album');
-	for (var i = 0; i < button.length; i++) {
-		button[i].onclick = function (event) {
-			var target = event.target;
-			var attr = target.dataset.attr;
-			getAlbum(attr);
-		}
-	}
-
+	
 	var albumId = 1;
 
+	var album = getSelector('.album');
+	album.onclick = function(e) {
+		var target = e.target;
+		//var parent = target.parentElement;
+		if(target.classList.contains('btn_album')) {
+			var attr = target.dataset.attr;
+			getAlbum(attr);
+		} else {
+			return;
+		}
+	}
+	
 	function getAlbum(item) {
 		var attr = item;
 		if (attr == 'prev') {
@@ -108,34 +184,12 @@ function setAlbum() {
 		} else {
 			albumId++;
 		}
-		fetch('https://jsonplaceholder.typicode.com/photos?albumId=' + albumId)
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (data) {
-				if (data[0].albumId == albumId) {
-					var img = document.getElementsByClassName('thumb');
-					for (var i = 0; i < img.length; i++) {
-						img[i].src = data[i].thumbnailUrl;
-					}
-					var link = document.getElementsByClassName('image');
-					for (var i = 0; i < link.length; i++) {
-						link[i].href = data[i].url;
-					}
-				}
-			})
-		fetch('https://jsonplaceholder.typicode.com/albums/')
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (data) {
-				for (var i = 0; i < data.length; i++) {
-					if (data[i].id == albumId) {
-						var h1 = document.getElementsByTagName('h1')[0];
-						h1.innerHTML = data[i].title;
-					}
-				}
-			})
+		if(albumId < 1) {
+			albumId = 1
+			return;
+		}
+		getPhotos(albumId);
+		setTitle(albumId);
 	}
 
 	var wrapper = getSelector('.wrapper');
