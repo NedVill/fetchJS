@@ -20,22 +20,27 @@ function getSelector(item) {
 	}
 }
 
-function popupSelect(popup, action, selector, button) {
-	var getPopup = getSelector(popup);
-	if (button === undefined && action != 'close') {
-		getPopup.classList.add(selector);
+function openPopup(popup, button) {
+	var thisPopup = getSelector(popup);
+	if(button === undefined) {
+		thisPopup.classList.add('opened');
 	} else {
-		var getButton = getSelector(button);
-		switch (action) {
-			case 'close':
-				getButton.onclick = function () {
-					getPopup.classList.remove(selector);
-				}
-				break;
-			case 'open':
-				getPopup.classList.add(selector);
-				break;
-		}
+		var thisButton = getSelector(button);	
+		thisButton.onclick = function () {
+		thisPopup.classList.add('opened');
+		}			
+	}
+}
+
+function closePopup(popup, button) {
+	var thisPopup = getSelector(popup);
+	if(button === undefined) {
+		thisPopup.classList.remove('opened');
+	} else {
+		var thisButton = getSelector(button);	
+		thisButton.onclick = function () {
+		thisPopup.classList.remove('opened');
+		}			
 	}
 }
 
@@ -47,19 +52,17 @@ function setImagePopup(item, popup) {
 	img.className = "imagePopup";
 	img.src = src;
 	getPopup.appendChild(img);
-	popupSelect(popup, 'open', 'opened');
-
+	openPopup(popup);
 }
 
-popupSelect('.popup', 'close', 'opened', '.close');
+closePopup('.popup','.close');
 
 function setAlbum() {
 
-	function standardAlbum() {
+	function initAlbum() {
 		fetch('https://jsonplaceholder.typicode.com/photos/?albumId=1')
 			.then(function (response) {
 				return response.json();
-
 			})
 			.then(function (data) {
 				var wrapp = getSelector('.thumbs');
@@ -85,7 +88,7 @@ function setAlbum() {
 			})
 	}
 
-	standardAlbum();
+	initAlbum();
 
 	var button = document.getElementsByClassName('btn_album');
 	for (var i = 0; i < button.length; i++) {
