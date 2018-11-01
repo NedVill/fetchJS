@@ -131,21 +131,17 @@ function setAlbum() {
 	}
 
 	function setTitle(id) {
-		fetch('https://jsonplaceholder.typicode.com/albums/')
+		if(id === undefined) {
+			id = 1;
+		}
+		fetch('https://jsonplaceholder.typicode.com/albums?id=' + id)
 			.then(function (response) {
 				return response.json();
 			})
 			.then(function (data) {
-				if(id === undefined) {
+				for (var i = 0; i < data.length; i++) {
 					var h1 = document.getElementsByTagName('h1')[0];
-					h1.innerHTML = data[0].title;		
-				} else {
-					for (var i = 0; i < data.length; i++) {
-						if (data[i].id == id) {
-							var h1 = document.getElementsByTagName('h1')[0];
-							h1.innerHTML = data[i].title;
-						}
-					}			
+					h1.innerHTML = data[0].title;
 				}
 			})			
 	}
