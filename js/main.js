@@ -68,28 +68,32 @@ function setImagePopup(item, popup) {
 closePopup('.popup', '.close');
 
 function setWrapp(data) {
-	var thumbs = createElement('div', 'thumbs');
-	var album = getSelector('.album');
-	var albumContent = createElement('div', 'album-content');
-	var title = createElement('h1', 'title-album');
-	var buttonPrev = createElement('button', 'btn_album', 'prev');
-	var buttonNext = createElement('button', 'btn_album', 'next');
-	buttonNext.classList.add('next');
-	buttonPrev.classList.add('prev');
-	album.appendChild(buttonPrev);
-	album.appendChild(albumContent);
-	album.appendChild(buttonNext);
-	albumContent.appendChild(title);
-	albumContent.appendChild(thumbs);
+	try {
+		var thumbs = createElement('div', 'thumbs');
+		var album = getSelector('.album');
+		var albumContent = createElement('div', 'album-content');
+		var title = createElement('h1', 'title-album');
+		var buttonPrev = createElement('button', 'btn_album', 'prev');
+		var buttonNext = createElement('button', 'btn_album', 'next');
+		buttonNext.classList.add('next');
+		buttonPrev.classList.add('prev');
+		album.appendChild(buttonPrev);
+		album.appendChild(albumContent);
+		album.appendChild(buttonNext);
+		albumContent.appendChild(title);
+		albumContent.appendChild(thumbs);
 
-	data.forEach(function (data) {
-		var img = createElement('img', 'thumb');
-		var link = createElement('a', 'image');
-		img.src = data.thumbnailUrl;
-		link.href = data.url;
-		link.appendChild(img);
-		thumbs.appendChild(link);
-	})
+		data.forEach(function (data) {
+			var img = createElement('img', 'thumb');
+			var link = createElement('a', 'image');
+			img.src = data.thumbnailUrl;
+			link.href = data.url;
+			link.appendChild(img);
+			thumbs.appendChild(link);
+		})
+	} catch {
+		console.log('не найден элемент с классом album');
+	}
 }
 
 function setImages(count) {
@@ -119,7 +123,7 @@ function setAlbum() {
 	initAlbum(albumId);
 
 	var album = getSelector('.album');
-	
+
 	album.onclick = function (e) {
 		var target = e.target;
 		if (target.classList.contains('btn_album')) {
@@ -141,7 +145,7 @@ function setAlbum() {
 			setImagePopup(parent, '.popup');
 		}
 	}
-	
+
 	function initAlbum(id) {
 		fetch('https://jsonplaceholder.typicode.com/photos/?albumId=' + id)
 			.then(function (response) {
@@ -150,8 +154,10 @@ function setAlbum() {
 			.then(function (data) {
 				setWrapp(data);
 				setTitle();
-			})
-	}	
+			}).catch(function(error) {
+				alert("Ошибка:" + error);
+			});
+	}
 
 	function getPhotos(id) {
 		fetch('https://jsonplaceholder.typicode.com/photos?albumId=' + id)
