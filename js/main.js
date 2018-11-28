@@ -1,18 +1,24 @@
-function getSelector(item) {
+function getSelector(item, parent) {
+	var parentElem;
+	if (!parent) {
+		parentElem = document;
+	} else {
+		parentElem = parent;
+	}
 	var selector;
 	switch (item.substr(0, 1)) {
 		case '#':
-			selector = document.getElementById(item.substr(1));
+			selector = parentElem.getElementById(item.substr(1));
 			return selector;
 			break;
 		case '.':
-			selector = document.getElementsByClassName(item.substr(1));
+			selector = parentElem.getElementsByClassName(item.substr(1));
 			for (var i = 0; i < selector.length; i++) {
 				return selector[i];
 			}
 			break;
 		default:
-			selector = document.getElementsByTagName(item);
+			selector = parentElem.getElementsByTagName(item);
 			for (var i = 0; i < selector.length; i++) {
 				return selector[i];
 			}
@@ -44,187 +50,175 @@ function closePopup(popup, button) {
 	}
 }
 
-function createElement(elem, classes, attr) {
-	var elem = document.createElement(elem);
-	elem.classList.add(classes);
-	if (attr) {
-		elem.setAttribute('data-attr', attr);
-	}
-	return elem;
-}
-
-function setImagePopup(item, popup) {
-	var getPopup = getSelector(popup);
-	var src = item.href;
-	getPopup.lastChild.remove();
-	var img = createElement('img', 'imagePopup');
-	img.src = src;
-	getPopup.appendChild(img);
-	setTimeout(function () {
-		openPopup(popup);
-	}, 100)
-}
-
 closePopup('.popup', '.close');
 
-function setWrapp(data) {
-	try {
-		var thumbs = createElement('div', 'thumbs');
-		var album = getSelector('.album');
-		var albumContent = createElement('div', 'album-content');
-		var title = createElement('h1', 'title-album');
-		var buttonPrev = createElement('button', 'btn_album', 'prev');
-		var buttonNext = createElement('button', 'btn_album', 'next');
-		buttonNext.classList.add('next');
-		buttonPrev.classList.add('prev');
-		album.appendChild(buttonPrev);
-		album.appendChild(albumContent);
-		album.appendChild(buttonNext);
-		albumContent.appendChild(title);
-		albumContent.appendChild(thumbs);
+function AlbumMake(parent) {
 
-		data.forEach(function (data) {
-			var img = createElement('img', 'thumb');
-			var link = createElement('a', 'image');
-			img.src = data.thumbnailUrl;
-			link.href = data.url;
-			link.appendChild(img);
-			thumbs.appendChild(link);
-		})
-	} catch {
-		console.log('не найден элемент с классом album');
-	}
-}
+		var parentWrapper = getSelector(parent);
 
-function setImages(count) {
-	for (var i = 0; i < count; i++) {
-		var thumbs = getSelector('.thumbs');
-		var img = createElement('img', 'thumb');
-		var link = createElement('a', 'image');
-		img.src = data.thumbnailUrl;
-		link.href = data.url;
-		link.appendChild(img);
-		thumbs.appendChild(link);
-	}
-}
-
-var countAlbum = 0;
-
-function setAlbum() {
-
-	countAlbum++;
-
-	if (countAlbum > 1) {
-		return false;
-	}
-
-	var albumId = 1;
-
-	initAlbum(albumId);
-
-	var album = getSelector('.album');
-
-	album.onclick = function (e) {
-		var target = e.target;
-		if (target.classList.contains('btn_album')) {
-			var attr = target.dataset.attr;
-			getAlbum(attr);
-		} else {
-			return;
+		function createElement(elem, classes, attr) {
+			var elem = document.createElement(elem);
+			elem.classList.add(classes);
+			if (attr) {
+				elem.setAttribute('data-attr', attr);
+			}
+			return elem;
 		}
-	}
 
-	var wrapper = getSelector('.wrapper');
-	wrapper.onclick = function (e) {
-		var target = e.target;
-		var parent = target.parentElement;
-		e.preventDefault();
-		e.stopPropagation();
-		if (parent.className == 'image') {
-			parent.preventDefault;
-			setImagePopup(parent, '.popup');
+		function setImagePopup(item, popup) {
+			var getPopup = getSelector(popup);
+			var src = item.href;
+			getPopup.lastChild.remove();
+			var img = createElement('img', 'imagePopup');
+			img.src = src;
+			getPopup.appendChild(img);
+			setTimeout(function () {
+				openPopup(popup);
+			}, 100)
 		}
-	}
 
-	function initAlbum(id) {
-		fetch('https://jsonplaceholder.typicode.com/photos/?albumId=' + id)
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (data) {
-				setWrapp(data);
-				setTitle();
-			}).catch(function(error) {
-				alert("Ошибка:" + error);
-			});
-	}
+		function setWrapp(data, parent) {
+			var thumbs = createElement('div', 'thumbs');
+			var albumWrapper = parent;
+			var album = createElement('div', 'album');
+			var wrapper = createElement('div', 'wrapper');
+			var albumContent = createElement('div', 'album-content');
+			var title = createElement('h1', 'title-album');
+			var buttonPrev = createElement('button', 'btn_album', 'prev');
+			var buttonNext = createElement('button', 'btn_album', 'next');
+			buttonNext.classList.add('next');
+			buttonPrev.classList.add('prev');
+			albumWrapper.appendChild(wrapper);
+			wrapper.appendChild(album);
+			album.appendChild(buttonPrev);
+			album.appendChild(albumContent);
+			album.appendChild(buttonNext);
+			albumContent.appendChild(title);
+			albumContent.appendChild(thumbs);
 
-	function getPhotos(id) {
-		fetch('https://jsonplaceholder.typicode.com/photos?albumId=' + id)
-			.then(function (response) {
-				return response.json();
+			var datas = data;
+
+			datas.forEach(function (datas) {
+				var img = createElement('img', 'thumb');
+				var link = createElement('a', 'image');
+				img.src = datas.thumbnailUrl;
+				link.href = datas.url;
+				link.appendChild(img);
+				thumbs.appendChild(link);
 			})
-			.then(function (data) {
-				var img = document.getElementsByClassName('thumb');
+		}
+
+		function setImages(count) {
+			for (var i = 0; i < count; i++) {
+				var thumbs = getSelector('.thumbs');
+				var img = createElement('img', 'thumb');
+				var link = createElement('a', 'image');
+				img.src = data.thumbnailUrl;
+				link.href = data.url;
+				link.appendChild(img);
+				thumbs.appendChild(link);
+			}
+		}
+
+		function setAlbum() {
+
+			var albumId = 1;
+			initAlbum(albumId);
+			parentWrapper.onclick = function (e) {
+				var target = e.target;
+				var parent = target.parentElement;
+				e.preventDefault();
+				e.stopPropagation();
+				if (parent.className == 'image') {
+					parent.preventDefault;
+					setImagePopup(parent, '.popup');
+				}
+				if (target.classList.contains('btn_album')) {
+					var attr = target.dataset.attr;
+					getAlbum(attr);
+				} else {
+					return;
+				}
+			}
+
+			function initAlbum(id) {
+				fetch('https://jsonplaceholder.typicode.com/photos/?albumId=' + id)
+					.then(function (response) {
+						return response.json();
+					})
+					.then(function (data) {
+						setWrapp(data, parentWrapper);
+						setTitle(data);
+					});
+			}
+
+			function getPhotos(id, data) {
+				var img = parentWrapper.getElementsByClassName('thumb');
+				var tumb = getSelector('.thumbs', parentWrapper);
 				var thumbs = getSelector('.thumbs');
 				var lengthData = data.length;
 				var imgLength = img.length;
-
 				if (imgLength > lengthData) {
 					var total = imgLength - lengthData;
 					while (img[total]) {
 						thumbs.removeChild(img[total]);
 					}
 				}
-
 				if (imgLength < lengthData) {
 					var total = lengthData - imgLength;
 					setImages(total);
 				}
-
 				Array.prototype.forEach.call(img, function (img, i) {
 					img.src = data[i].thumbnailUrl;
 				})
-
-				var link = document.getElementsByClassName('image');
+				var link = parentWrapper.getElementsByClassName('image');
 				Array.prototype.forEach.call(link, function (link, i) {
 					link.href = data[i].url;
 				})
+			}
 
-			})
-	}
-
-	function setTitle(id) {
-		if (id === undefined) {
-			id = 1;
-		}
-		fetch('https://jsonplaceholder.typicode.com/albums?id=' + id)
-			.then(function (response) {
-				return response.json();
-			})
-			.then(function (data) {
+			function setTitle(data) {
 				data.forEach(function (data) {
-					var h1 = getSelector('.title-album');
+					var h1 = getSelector('.title-album', parentWrapper);
 					h1.innerHTML = data.title;
 				})
-			})
-	}
+			}
 
-	function getAlbum(attr) {
-		if (attr == 'prev') {
-			albumId--;
-		} else {
-			albumId++;
+			function checkAlbum(id, attr) {
+				fetch('https://jsonplaceholder.typicode.com/photos/?albumId=' + id)
+					.then(function (response) {
+						return response.json();
+					})
+					.then(function (data) {
+						if (data.length == 0) {
+							alert('Закончились альбомы');
+							if (attr == 'prev') {
+								albumId++;
+							} else {
+								albumId--;
+							}
+							return;
+						} else {
+							getPhotos(id, data);
+							setTitle(data);
+						}
+					});
+			}
+
+			function getAlbum(attr) {
+
+				if (attr == 'prev') {
+					albumId--;
+				} else {
+					albumId++;
+				}
+				checkAlbum(albumId, attr);
+			}
+			
 		}
-		if (albumId < 1) {
-			albumId = 1
-			return;
-		}
+		setAlbum();
 
-		getPhotos(albumId);
-		setTitle(albumId);
-	}
+};
 
-}
-
-setAlbum();
+AlbumMake('.albumOne');
+//AlbumMake('.wrapperok');
